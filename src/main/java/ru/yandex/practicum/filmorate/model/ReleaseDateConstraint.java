@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.*;
-import java.time.LocalDate;
 
 @Documented
 @Constraint(validatedBy = ReleaseDateValidator.class)
