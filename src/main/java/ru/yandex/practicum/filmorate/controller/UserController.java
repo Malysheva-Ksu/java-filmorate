@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,40 +15,35 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-@RequestMapping("/films")
-public class FilmController {
+@RequestMapping("/users")
+public class UserController {
 
-    private Map<Integer, Film> films = new HashMap<>();
+    private Map<Integer, User> users = new HashMap<>();
     private int currentId = 1;
 
     @PostMapping
-    public Film addFilm(@Valid @RequestBody Film film) {
-        if (film.isValidDuration()) {
-            film.setId(currentId++);
-            films.put(film.getId(), film);
-            log.info("Добавлен новый фильм: {}", film);
-        } else {
-            return null;
-        }
-        return film;
+    public User addUser(@Valid @RequestBody User user) {
+        user.setId(currentId++);
+        users.put(user.getId(), user);
+        log.info("Добавлен новый пользователь: {}", user);
+        return user;
     }
 
-
     @PutMapping("/{id}")
-    public Film updateFilm(@PathVariable int id, @Valid @RequestBody Film film) {
-        if (films.containsKey(id)) {
-            film.setId(id);
-            films.put(id, film);
-            log.info("Обновлен фильм с ID {}: {}", id, film);
-            return film;
+    public User updateUser(@PathVariable int id, @Valid @RequestBody User user) {
+        if (users.containsKey(id)) {
+            user.setId(id);
+            users.put(id, user);
+            log.info("Обновлен пользователь с ID {}: {}", id, user);
+            return user;
         }
-        log.warn("Попытка обновления несуществующего фильма с ID {}", id);
+        log.warn("Попытка обновления несуществующего пользователя с ID {}", id);
         return null;
     }
 
     @GetMapping
-    public List<Film> getAllFilms() {
-        return films.values().stream().collect(Collectors.toList());
+    public List<User> getAllUsers() {
+        return users.values().stream().collect(Collectors.toList());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
