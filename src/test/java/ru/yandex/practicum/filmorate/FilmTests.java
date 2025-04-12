@@ -28,7 +28,7 @@ public class FilmTests {
         film.setName("");
         film.setDescription("A valid description.");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDurationInSeconds(200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertThat(violations).hasSize(1);
@@ -41,7 +41,7 @@ public class FilmTests {
         film.setName("Valid Name");
         film.setDescription("A".repeat(201));
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDurationInSeconds(200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertThat(violations).hasSize(1);
@@ -54,7 +54,7 @@ public class FilmTests {
         film.setName("Valid Name");
         film.setDescription("A valid description.");
         film.setReleaseDate(LocalDate.of(1895, 12, 27));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDurationInSeconds(200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertThat(violations).hasSize(1);
@@ -67,7 +67,7 @@ public class FilmTests {
         film.setName("Valid Name");
         film.setDescription("A valid description.");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(Duration.ofMinutes(-120));
+        film.setDurationInSeconds(-200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertThat(violations).hasSize(1);
@@ -80,7 +80,7 @@ public class FilmTests {
         film.setName("Valid Name");
         film.setDescription("A valid description.");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDurationInSeconds(200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertThat(violations).isEmpty();
