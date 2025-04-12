@@ -22,27 +22,36 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
+        if (user.getName() != null && user.getName().trim().isEmpty()) {
+            user.setName(null);
+        }
+
         user.setId(currentId++);
         users.put(user.getId(), user);
         log.info("Добавлен новый пользователь: {}", user);
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody User user) {
-        if (!users.containsKey(id)) {
-            log.warn("Попытка обновления несуществующего пользователя с ID {}", id);
+    @PutMapping({ "", "/" })
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
+        if (!users.containsKey(user.getId())) {
+            log.warn("Попытка обновления несуществующего пользователя с ID {}", user.getId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        user.setId(id);
-        users.put(id, user);
-        log.info("Обновлен пользователь с ID {}: {}", id, user);
+        if (user.getName() != null && user.getName().trim().isEmpty()) {
+            user.setName(null);
+        }
+
+        users.put(user.getId(), user);
+        log.info("Обновлен пользователь с ID {}: {}", user.getId(), user);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> list = users.values().stream().collect(Collectors.toList());
+        List<User> list = users.values()
+                .stream()
+                .collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
 

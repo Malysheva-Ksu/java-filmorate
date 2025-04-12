@@ -31,6 +31,16 @@ public class Film {
     @PositiveDuration(message = "Продолжительность фильма должна быть положительным числом.")
     private Duration duration;
 
+    public Long getDurationInSeconds() {
+        return duration.getSeconds();
+    }
+
+    public void setDurationInSeconds(Long durationInSeconds) {
+        duration = Duration.ofSeconds(durationInSeconds);
+    }
+
+
+
     public boolean isValidDuration() {
         return duration != null && !duration.isNegative() && !duration.isZero();
     }

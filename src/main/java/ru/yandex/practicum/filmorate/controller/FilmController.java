@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.Duration;
 
 @Slf4j
 @RestController
@@ -22,6 +23,8 @@ public class FilmController {
 
     @PostMapping
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
+        film.setDuration(Duration.ofSeconds(film.getDurationInSeconds()));
+
         if (!film.isValidDuration()) {
             log.warn("Попытка добавить фильм с некорректной продолжительностью: {}", film);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -38,10 +41,21 @@ public class FilmController {
             log.warn("Попытка обновления несуществующего фильма с ID {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        film.setId(id);
-        films.put(id, film);
-        log.info("Обновлен фильм с ID {}: {}", id, film);
-        return ResponseEntity.ok(film);
+
+        Film existingFilm = films.get(id);
+        existingFilm.setName(film.getName());
+        existingFilm.setDescription(film.getDescription());
+        existingFilm.setReleaseDate(film.getReleaseDate());
+        existingFilm.setDuration(Duration.ofSeconds(film.getDurationInSeconds()));
+
+        if (!existingFilm.isValidDuration()) {
+            log.warn("Попытка обновить фильм с некорректной продолжительностью: {}", film);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        films.put(id, existingFilm);
+        log.info("Обновлен фильм с ID {}: {}", id, existingFilm);
+        return ResponseEntity.ok(existingFilm);
     }
 
     @GetMapping
