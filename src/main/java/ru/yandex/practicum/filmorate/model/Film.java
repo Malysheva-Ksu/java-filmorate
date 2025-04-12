@@ -31,6 +31,7 @@ public class Film {
     @PositiveDuration(message = "Продолжительность фильма должна быть положительным числом.")
     private Duration duration;
 
+    @NotNull(message = "Продолжительность фильма не может быть null.")
     private Long durationInSeconds;
 
     public Long getDurationInSeconds() {
@@ -39,6 +40,11 @@ public class Film {
 
     public void setDurationInSeconds(Long durationInSeconds) {
         this.durationInSeconds = durationInSeconds;
+        if (durationInSeconds != null) {
+            this.duration = Duration.ofSeconds(durationInSeconds);
+        } else {
+            this.duration = null;
+        }
     }
 
 
