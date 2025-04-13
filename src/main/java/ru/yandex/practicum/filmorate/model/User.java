@@ -16,7 +16,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Email не может быть пустым.")
     @Email(message = "Email должен быть действительным и содержать символ @.")

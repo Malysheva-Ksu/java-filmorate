@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.HashMap;
@@ -16,46 +18,48 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
 
-    private final Map<Integer, User> users = new HashMap<>();
-    private int currentId = 1;
+    private final Map<Long, User> users = new HashMap<>();
+    private long currentId = 1;
 
     @PostMapping
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
-        if (user.getName() != null && user.getName().trim().isEmpty()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
 
         user.setId(currentId++);
         users.put(user.getId(), user);
+
         log.info("Добавлен новый пользователь: {}", user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
         if (!users.containsKey(user.getId())) {
-            log.warn("Попытка обновления несуществующего пользователя с ID {}", user.getId());
-            throw new RuntimeException("Пользователь не найден. ID: " + user.getId());
+            throw new UserNotFoundException("Пользователь с ID " + user.getId() + " не найден");
+        }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
 
         User existingUser = users.get(user.getId());
+
         existingUser.setLogin(user.getLogin());
         existingUser.setEmail(user.getEmail());
         existingUser.setBirthday(user.getBirthday());
         existingUser.setName(user.getName());
 
-        if (existingUser.getName() != null && existingUser.getName().trim().isEmpty()) {
-            existingUser.setName(user.getLogin());
-        }
+        users.put(existingUser.getId(), existingUser);
 
-        users.put(user.getId(), existingUser);
         log.info("Обновлен пользователь с ID {}: {}", user.getId(), existingUser);
         return ResponseEntity.ok(existingUser);
     }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> list = users.values().stream().collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+        List<User> userList = users.values().stream().collect(Collectors.toList());
+        return ResponseEntity.ok(userList);
     }
 }

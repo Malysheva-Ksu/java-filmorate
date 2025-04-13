@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int currentId = 1;
+    private final Map<Long, Film> films = new HashMap<>();
+    private Long currentId = 1L;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
