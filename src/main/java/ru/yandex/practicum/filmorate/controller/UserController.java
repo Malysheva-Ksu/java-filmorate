@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -23,7 +22,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         if (user.getName() != null && user.getName().trim().isEmpty()) {
-            user.setName(null);
+            user.setName(user.getLogin());
         }
 
         user.setId(currentId++);
@@ -32,27 +31,31 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping({ "", "/" })
+    @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
         if (!users.containsKey(user.getId())) {
             log.warn("Попытка обновления несуществующего пользователя с ID {}", user.getId());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        if (user.getName() != null && user.getName().trim().isEmpty()) {
-            user.setName(null);
+            throw new RuntimeException("Пользователь не найден. ID: " + user.getId());
         }
 
-        users.put(user.getId(), user);
-        log.info("Обновлен пользователь с ID {}: {}", user.getId(), user);
-        return ResponseEntity.ok(user);
+        User existingUser = users.get(user.getId());
+        existingUser.setLogin(user.getLogin());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setBirthday(user.getBirthday());
+        existingUser.setName(user.getName());
+
+        if (existingUser.getName() != null && existingUser.getName().trim().isEmpty()) {
+            existingUser.setName(user.getLogin());
+        }
+
+        users.put(user.getId(), existingUser);
+        log.info("Обновлен пользователь с ID {}: {}", user.getId(), existingUser);
+        return ResponseEntity.ok(existingUser);
     }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> list = users.values()
-                .stream()
-                .collect(Collectors.toList());
+        List<User> list = users.values().stream().collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
-
 }

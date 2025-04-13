@@ -3,16 +3,16 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.time.Duration;
-
-public class PositiveDurationValidator implements ConstraintValidator<PositiveDuration, Duration> {
-
+public class PositiveDurationValidator implements ConstraintValidator<PositiveDuration, Number> {
     @Override
     public void initialize(PositiveDuration constraintAnnotation) {
     }
 
     @Override
-    public boolean isValid(Duration duration, ConstraintValidatorContext context) {
-        return duration != null && !duration.isNegative() && !duration.isZero();
+    public boolean isValid(Number value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return true;
+        }
+        return value.longValue() > 0;
     }
 }
