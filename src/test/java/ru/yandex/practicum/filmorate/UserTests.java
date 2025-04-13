@@ -12,7 +12,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserTests {
+public class
+UserTests {
 
     private final Validator validator;
 
