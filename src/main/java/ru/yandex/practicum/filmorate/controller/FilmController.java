@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.HashMap;
@@ -31,10 +32,12 @@ public class FilmController {
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
-            log.warn("Попытка обновления несуществующего фильма с ID {}", film.getId());
-            throw new RuntimeException("Фильм не найден. ID: " + film.getId());
+            log.error("Попытка обновить несуществующий фильм с ID: {}", film.getId());
+            throw new FilmNotFoundException("Фильм с ID " + film.getId() + " не найден");
         }
+
         Film existingFilm = films.get(film.getId());
+
         existingFilm.setName(film.getName());
         existingFilm.setDescription(film.getDescription());
         existingFilm.setReleaseDate(film.getReleaseDate());
