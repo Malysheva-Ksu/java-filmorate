@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -50,7 +51,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void addLike(Long filmId, Long userId) {
         if (userId == null || userId <= 0) {
-            throw new ValidationException("Некорректный ID пользователя");
+            throw new UserNotFoundException("Некорректный ID пользователя");
         }
             Film film = getFilmById(filmId);
             if (!film.getLikes().contains(userId)) {
@@ -61,7 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void removeLike(Long filmId, Long userId) {
         if (userId == null || userId <= 0) {
-            throw new ValidationException("Некорректный ID пользователя");
+            throw new UserNotFoundException("Некорректный ID пользователя");
         }
         Film film = getFilmById(filmId);
         film.getLikes().remove(userId);
