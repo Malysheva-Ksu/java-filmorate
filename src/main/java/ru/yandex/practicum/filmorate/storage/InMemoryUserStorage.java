@@ -98,4 +98,11 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return commonFriends;
     }
+
+    @Override
+    public Set<Long> getFriends(Long userId) {
+        User user = getUserById(userId);
+        Set<Long> friends = user.getFriends();
+        return friends;
+    }
 }

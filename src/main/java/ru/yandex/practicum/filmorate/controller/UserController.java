@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -41,7 +42,7 @@ public class UserController {
         return ResponseEntity.ok(userList);
     }
 
-    @PostMapping("/{userId}/friends/{friendId}")
+    @PutMapping("/{userId}/friends/{friendId}")
     public ResponseEntity<Set<Long>> addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
         Set<Long> friends = userService.addFriend(userId, friendId);
         return ResponseEntity.ok(friends);
@@ -50,6 +51,15 @@ public class UserController {
     @DeleteMapping("/{userId}/friends/{friendId}")
     public ResponseEntity<Set<Long>> removeFriend(@PathVariable Long userId, @PathVariable Long friendId) {
         Set<Long> friends = userService.removeFriend(userId, friendId);
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/{userId}/friends")
+    public ResponseEntity<Set<User>> getFriends(@PathVariable Long userId) {
+        Set<Long> friendIds = userService.getFriends(userId); // Реализуйте userService.getFriends
+        Set<User> friends = friendIds.stream()
+                .map(userService::getUserById)
+                .collect(Collectors.toSet());
         return ResponseEntity.ok(friends);
     }
 
