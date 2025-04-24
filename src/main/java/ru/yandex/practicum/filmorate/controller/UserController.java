@@ -56,7 +56,7 @@ public class UserController {
 
     @GetMapping("/{userId}/friends")
     public ResponseEntity<Set<User>> getFriends(@PathVariable Long userId) {
-        Set<Long> friendIds = userService.getFriends(userId); // Реализуйте userService.getFriends
+        Set<Long> friendIds = userService.getFriends(userId);
         Set<User> friends = friendIds.stream()
                 .map(userService::getUserById)
                 .collect(Collectors.toSet());
