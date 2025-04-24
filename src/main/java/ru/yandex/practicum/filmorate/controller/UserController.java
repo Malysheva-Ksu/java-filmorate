@@ -2,65 +2,67 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
 
-    private final Map<Long, User> users = new HashMap<>();
-    private long currentId = 1;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-
-        user.setId(currentId++);
-        users.put(user.getId(), user);
-
-        log.info("Добавлен новый пользователь: {}", user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        User createdUser = userService.addUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            log.error("Попытка обновить несуществующего пользователя с ID: {}", user.getId());
-            throw new UserNotFoundException("Пользователь с ID " + user.getId() + " не найден");
-        }
-
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-
-        User existingUser = users.get(user.getId());
-
-        existingUser.setLogin(user.getLogin());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setBirthday(user.getBirthday());
-        existingUser.setName(user.getName());
-
-        users.put(existingUser.getId(), existingUser);
-
-        log.info("Обновлен пользователь с ID {}: {}", user.getId(), existingUser);
-        return ResponseEntity.ok(existingUser);
+        User updatedUser = userService.updateUser(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> userList = users.values().stream().collect(Collectors.toList());
+    public ResponseEntity<Collection<User>> getAllUsers() {
+        Collection<User> userList = userService.getAllUsers();
         return ResponseEntity.ok(userList);
+    }
+
+    @PostMapping("/{userId}/friends/{friendId}")
+    public ResponseEntity<Set<Long>> addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        Set<Long> friends = userService.addFriend(userId, friendId);
+        return ResponseEntity.ok(friends);
+    }
+
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public ResponseEntity<Set<Long>> removeFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        Set<Long> friends = userService.removeFriend(userId, friendId);
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/{userId}/friends/common/{otherUserId}")
+    public ResponseEntity<Set<Long>> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+        Set<Long> commonFriends = userService.getCommonFriends(userId, otherUserId);
+        return ResponseEntity.ok(commonFriends);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 }

@@ -5,12 +5,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.annotation.PositiveDuration;
+import ru.yandex.practicum.filmorate.annotation.ReleaseDateConstraint;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
     private Long id;
+    private Set<Long> likes = new HashSet<>();
 
     @NotBlank(message = "Название не может быть пустым.")
     private String name;
