@@ -99,10 +99,7 @@ public class InMemoryUserStorage implements UserStorage {
 
         List<User> commonFriends = new ArrayList<>();
         for (Long id : commonFriendIds) {
-            try {
                 commonFriends.add(getUserById(id));
-            } catch (UserNotFoundException e) {
-            }
         }
         return commonFriends;
     }
