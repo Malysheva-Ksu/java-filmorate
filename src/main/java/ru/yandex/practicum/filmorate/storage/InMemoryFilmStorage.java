@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -16,6 +17,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
     private Long currentId = 1L;
+    private final InMemoryUserStorage userStorage;
+
+    @Autowired
+    public InMemoryFilmStorage(InMemoryUserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     @Override
     public Film addFilm(Film film) {
@@ -49,10 +56,15 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void addLike(Long filmId, Long userId) {
-        if (userId == null || userId <= 0) {
+        Film film = getFilmById(filmId);
+        if (film == null) {
+            throw new FilmNotFoundException("Фильм с ID " + filmId + " не найден");
+        }
+
+        if (!userStorage.existsUserById(userId)) {
             throw new UserNotFoundException("Некорректный ID пользователя");
         }
-            Film film = getFilmById(filmId);
+
             if (!film.getLikes().contains(userId)) {
                 film.getLikes().add(userId);
             }
@@ -60,10 +72,15 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void removeLike(Long filmId, Long userId) {
-        if (userId == null || userId <= 0) {
+        Film film = getFilmById(filmId);
+        if (film == null) {
+            throw new FilmNotFoundException("Фильм с ID " + filmId + " не найден");
+        }
+
+        if (!userStorage.existsUserById(userId)) {
             throw new UserNotFoundException("Некорректный ID пользователя");
         }
-        Film film = getFilmById(filmId);
+
         film.getLikes().remove(userId);
     }
 

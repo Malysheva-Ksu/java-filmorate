@@ -4,11 +4,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
@@ -88,15 +85,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Set<Long> getCommonFriends(Long userId, Long otherUserId) {
+    public List<Long> getCommonFriends(Long userId, Long otherUserId) {
         User user = getUserById(userId);
         User otherUser = getUserById(otherUserId);
-        Set<Long> commonFriends = new HashSet<>();
-        if (user.getFriends() != null && otherUser.getFriends() != null) {
-            commonFriends.addAll(user.getFriends());
-            commonFriends.retainAll(otherUser.getFriends());
+
+        if (user.getFriends() == null || otherUser.getFriends() == null) {
+            return Collections.emptyList();
         }
-        return commonFriends;
+
+        return user.getFriends().stream()
+                .filter(friendId -> otherUser.getFriends().contains(friendId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -104,5 +103,9 @@ public class InMemoryUserStorage implements UserStorage {
         User user = getUserById(userId);
         Set<Long> friends = user.getFriends();
         return friends;
+    }
+
+    public boolean existsUserById(Long userId) {
+        return users.containsKey(userId);
     }
 }
