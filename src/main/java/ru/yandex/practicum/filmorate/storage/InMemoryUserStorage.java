@@ -85,22 +85,28 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public String getCommonFriends(Long userId, Long otherUserId) {
+    public List<User> getCommonFriends(Long userId, Long otherUserId) {
         User user = getUserById(userId);
         User otherUser = getUserById(otherUserId);
 
         if (user.getFriends() == null || otherUser.getFriends() == null) {
-            return "";
+            return Collections.emptyList();
         }
 
-        List<Long> commonFriendIds = user.getFriends().stream()
+        Set<Long> commonFriendIds = user.getFriends().stream()
                 .filter(friendId -> otherUser.getFriends().contains(friendId))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        return commonFriendIds.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
+        List<User> commonFriends = new ArrayList<>();
+        for (Long id : commonFriendIds) {
+            try {
+                commonFriends.add(getUserById(id));
+            } catch (UserNotFoundException e) {
+            }
+        }
+        return commonFriends;
     }
+
 
     @Override
     public Set<Long> getFriends(Long userId) {

@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,8 +65,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/friends/common/{otherUserId}")
-    public ResponseEntity<String> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
-        String commonFriends = userService.getCommonFriends(userId, otherUserId);
+    public ResponseEntity<List<User>> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+        List<User> commonFriends = userService.getCommonFriends(userId, otherUserId);
         return ResponseEntity.ok(commonFriends);
     }
 
