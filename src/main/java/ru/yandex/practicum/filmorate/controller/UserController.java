@@ -65,8 +65,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/friends/common/{otherUserId}")
-    public ResponseEntity<List<Long>> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
-        List<Long> commonFriends = userService.getCommonFriends(userId, otherUserId);
+    public ResponseEntity<String> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+        String commonFriends = userService.getCommonFriends(userId, otherUserId);
         return ResponseEntity.ok(commonFriends);
     }
 

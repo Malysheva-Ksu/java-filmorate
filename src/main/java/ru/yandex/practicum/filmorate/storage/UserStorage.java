@@ -19,7 +19,7 @@ public interface UserStorage {
 
     Set<Long> removeFriend(Long userId, Long friendId);
 
-    List<Long> getCommonFriends(Long userId, Long otherUserId);
+    String getCommonFriends(Long userId, Long otherUserId);
 
     Set<Long> getFriends(Long userId);
 }

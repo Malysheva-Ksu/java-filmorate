@@ -44,7 +44,7 @@ public class UserService {
         return userStorage.removeFriend(userId, friendId);
     }
 
-    public List<Long> getCommonFriends(Long userId, Long otherUserId) {
+    public String getCommonFriends(Long userId, Long otherUserId) {
         return userStorage.getCommonFriends(userId, otherUserId);
     }
 
