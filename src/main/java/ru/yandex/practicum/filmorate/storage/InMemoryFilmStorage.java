@@ -73,6 +73,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void removeLike(Long filmId, Long userId) {
         Film film = getFilmById(filmId);
+        if (film == null) {
+            throw new FilmNotFoundException("Фильм с ID " + filmId + " не найден");
+        }
+        
         if (!userStorage.existsUserById(userId)) {
             throw new UserNotFoundException("Некорректный ID пользователя");
         }
