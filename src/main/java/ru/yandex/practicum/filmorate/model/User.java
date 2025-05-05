@@ -14,6 +14,7 @@ import java.util.Set;
 @Data
 public class User {
     private Set<Long> friends = new HashSet<>();
+    private Set<Friendship> friendships = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -16,12 +16,16 @@ import java.util.Set;
 public class Film {
     private Long id;
     private Set<Long> likes = new HashSet<>();
+    private Set<String> genres = new HashSet<>();
 
     @NotBlank(message = "Название не может быть пустым.")
     private String name;
 
     @Size(max = 200, message = "Максимальная длина описания — 200 символов.")
     private String description;
+
+    @NotNull(message = "Рейтинг МРА не может быть null.")
+    private MpaRating mpaRating;
 
     @NotNull(message = "Дата релиза не должна быть null.")
     @ReleaseDateConstraint
