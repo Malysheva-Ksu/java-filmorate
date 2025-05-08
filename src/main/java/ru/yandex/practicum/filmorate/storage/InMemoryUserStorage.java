@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.interfaceStorage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +14,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
     private long currentId = 1L;
+
+    private final Map<Long, Map<Long, FriendshipStatus>> friendships = new HashMap<>();
 
     @Override
     public User addUser(User user) {
@@ -58,58 +62,56 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public Set<Long> addFriend(Long userId, Long friendId) {
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-        if (user.getFriends() == null) {
-            user.setFriends(new HashSet<>());
+        getUserById(userId);
+        getUserById(friendId);
+
+        Map<Long, FriendshipStatus> friendRequests = friendships.getOrDefault(friendId, new HashMap<>());
+        FriendshipStatus reverseStatus = friendRequests.get(userId);
+        if (reverseStatus != null && reverseStatus == FriendshipStatus.PENDING) {
+            friendships.computeIfAbsent(friendId, k -> new HashMap<>()).put(userId, FriendshipStatus.CONFIRMED);
+            friendships.computeIfAbsent(userId, k -> new HashMap<>()).put(friendId, FriendshipStatus.CONFIRMED);
+        } else {
+            friendships.computeIfAbsent(userId, k -> new HashMap<>()).put(friendId, FriendshipStatus.PENDING);
         }
-        if (friend.getFriends() == null) {
-            friend.setFriends(new HashSet<>());
-        }
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-        return user.getFriends();
+        return getFriends(userId);
     }
 
     @Override
     public Set<Long> removeFriend(Long userId, Long friendId) {
-        User user = getUserById(userId);
-        User friend = getUserById(friendId);
-        if (user.getFriends() != null) {
-            user.getFriends().remove(friendId);
+        Map<Long, FriendshipStatus> userFriends = friendships.get(userId);
+        if (userFriends != null) {
+            userFriends.remove(friendId);
         }
-        if (friend.getFriends() != null) {
-            friend.getFriends().remove(userId);
+        Map<Long, FriendshipStatus> friendFriends = friendships.get(friendId);
+        if (friendFriends != null) {
+            friendFriends.remove(userId);
         }
-        return user.getFriends();
+        return getFriends(userId);
     }
 
     @Override
     public List<User> getCommonFriends(Long userId, Long otherUserId) {
-        User user = getUserById(userId);
-        User otherUser = getUserById(otherUserId);
+        Set<Long> userConfirmedFriends = getFriends(userId);
+        Set<Long> otherConfirmedFriends = getFriends(otherUserId);
 
-        if (user.getFriends() == null || otherUser.getFriends() == null) {
-            return Collections.emptyList();
-        }
-
-        Set<Long> commonFriendIds = user.getFriends().stream()
-                .filter(friendId -> otherUser.getFriends().contains(friendId))
+        Set<Long> commonFriendIds = userConfirmedFriends.stream()
+                .filter(otherConfirmedFriends::contains)
                 .collect(Collectors.toSet());
 
         List<User> commonFriends = new ArrayList<>();
         for (Long id : commonFriendIds) {
-                commonFriends.add(getUserById(id));
+            commonFriends.add(getUserById(id));
         }
         return commonFriends;
     }
 
-
     @Override
     public Set<Long> getFriends(Long userId) {
-        User user = getUserById(userId);
-        Set<Long> friends = user.getFriends();
-        return friends;
+        Map<Long, FriendshipStatus> friendsMap = friendships.getOrDefault(userId, Collections.emptyMap());
+        return friendsMap.entrySet().stream()
+                .filter(e -> e.getValue() == FriendshipStatus.CONFIRMED)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     public boolean existsUserById(Long userId) {
