@@ -105,10 +105,7 @@ public class FilmDbStorage implements FilmStorage {
         checkUserExists(userId);
 
         String sqlQuery = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
-        try {
             jdbcTemplate.update(sqlQuery, filmId, userId);
-        } catch (Exception e) {
-        }
     }
 
     @Override
