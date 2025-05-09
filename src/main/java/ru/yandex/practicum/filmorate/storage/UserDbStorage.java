@@ -42,7 +42,7 @@ public class UserDbStorage implements UserStorage {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        String sqlQuery = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO users (user_id, email, login, name, birthday) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
