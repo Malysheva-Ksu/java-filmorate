@@ -6,7 +6,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -85,7 +85,11 @@ public class FilmTests {
         film.setDescription("A valid description.");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDurationInSeconds(200L);
-        film.setMpaRating(MpaRating.G);
+
+        Mpa mpa = new Mpa();
+        mpa.setId(1L);
+        mpa.setName("G");
+        film.setMpa(mpa);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertThat(violations).isEmpty();

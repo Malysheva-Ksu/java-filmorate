@@ -147,7 +147,6 @@ public class UserDbStorage implements UserStorage {
             throw new UserNotFoundException("Пользователь с ID " + friendId + " не является другом для пользователя с ID " + userId);
         }
 
-        // Удаляем дружбу в обоих направлениях
         String sqlQuery = "DELETE FROM friendship WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId, friendId, userId);
 
