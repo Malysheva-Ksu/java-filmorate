@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.FilmStorage;
 
 import java.sql.*;
@@ -36,6 +38,16 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
+        if (film.getId() != null) {
+            String checkQuery = "SELECT COUNT(*) FROM films WHERE film_id = ?";
+            Integer count = jdbcTemplate.queryForObject(checkQuery, Integer.class, film.getId());
+            if (count != null && count > 0) {
+                String nextIdQuery = "SELECT COALESCE(MAX(film_id), 0) + 1 FROM films";
+                Long nextId = jdbcTemplate.queryForObject(nextIdQuery, Long.class);
+                film.setId(nextId);
+            }
+        }
+
         String sqlQuery = "INSERT INTO films (name, description, release_date, durationInSeconds, mpa_rating) VALUES (?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(connection -> {
@@ -44,7 +56,10 @@ public class FilmDbStorage implements FilmStorage {
             stmt.setString(2, film.getDescription());
             stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
             stmt.setLong(4, film.getDurationInSeconds());
-            stmt.setString(5, film.getMpa().getName());
+            Long mpaId = film.getMpa().getId();
+            Mpa mpa = film.getMpa();
+            MpaRating mpaRating = mpa.getMpaRatingById(mpaId);
+            stmt.setString(5, mpaRating.getDescription());
             return stmt;
         });
 
@@ -54,10 +69,13 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         getFilmById(film.getId());
+        Long mpaId = film.getMpa().getId();
+        Mpa mpa = film.getMpa();
+        MpaRating mpaRating = mpa.getMpaRatingById(mpaId);
 
-        String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, durationInSeconds = ? WHERE film_id = ?";
+        String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, durationInSeconds = ?, mpa_rating = ?, WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(),
-                Date.valueOf(film.getReleaseDate()), film.getDurationInSeconds(), film.getId());
+                Date.valueOf(film.getReleaseDate()), film.getDurationInSeconds(), mpaRating.getDescription(), film.getId());
         return film;
     }
 

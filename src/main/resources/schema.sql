@@ -15,12 +15,12 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Таблица фильмов
 CREATE TABLE IF NOT EXISTS films (
-    film_id SERIAL PRIMARY KEY,
+    film_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     release_date DATE NOT NULL,
     durationInSeconds INTEGER NOT NULL,
-    mpa_rating VARCHAR(10) NOT NULL
+    mpa_rating VARCHAR(30) NOT NULL
 );
 
 -- Таблица жанров

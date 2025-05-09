@@ -1,18 +1,21 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.annotation.MpaDeserializer;
 
+@JsonDeserialize(using = MpaDeserializer.class)
 @Data
 public class Mpa {
     private Long id;
     private String name;
 
-    public Mpa() {
-    }
-
     public Mpa(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Mpa() {
     }
 
     public static MpaRating getMpaRatingById(Long id) {
