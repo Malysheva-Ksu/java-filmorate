@@ -42,21 +42,32 @@ public class UserDbStorage implements UserStorage {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        String sqlQuery = "INSERT INTO users (user_id, email, login, name, birthday) VALUES (?, ?, ?, ?, ?)";
+
+        if (user.getId() == null) {
+            user.setId(generateNextId());
+        }
+
+        String sqlQuery = "INSERT INTO users (user_id, name, login, email, birthday) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"user_id"});
-            stmt.setString(1, user.getEmail());
-            stmt.setString(2, user.getLogin());
-            stmt.setString(3, user.getName());
-            stmt.setDate(4, user.getBirthday() != null ? Date.valueOf(user.getBirthday()) : null);
+            stmt.setLong(1, (Long)user.getId());
+            stmt.setString(2, user.getName());
+            stmt.setString(3, user.getLogin());
+            stmt.setString(4, user.getEmail());
+            stmt.setDate(5, user.getBirthday() != null ? Date.valueOf(user.getBirthday()) : null);
 
             return stmt;
         }, keyHolder);
 
         user.setId(keyHolder.getKey().longValue());
         return user;
+    }
+
+    private Long generateNextId() {
+        String sqlQuery = "SELECT COALESCE(MAX(user_id), 0) + 1 FROM users";
+        return jdbcTemplate.queryForObject(sqlQuery, Long.class);
     }
 
     @Override
