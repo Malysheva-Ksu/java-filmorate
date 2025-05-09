@@ -38,7 +38,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        String sqlQuery = "INSERT INTO films (name, description, release_date, durationInSeconds, MpaRating) VALUES (?, ?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO films (name, description, release_date, durationInSeconds, mpa_rating) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
