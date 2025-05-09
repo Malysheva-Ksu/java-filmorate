@@ -117,8 +117,17 @@ public class UserDbStorage implements UserStorage {
     public Set<Long> addFriend(Long userId, Long friendId) {
         User user = getUserById(userId);
         User friend = getUserById(friendId);
-        String sqlQuery = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, 'pending')";
-        jdbcTemplate.update(sqlQuery, userId, friendId);
+
+        String checkQuery = "SELECT COUNT(*) FROM friendship WHERE user_id = ? AND friend_id = ?";
+        Integer count = jdbcTemplate.queryForObject(checkQuery, Integer.class, userId, friendId);
+
+        if (count == null || count == 0) {
+            String sqlQuery = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, 'confirmed')";
+            jdbcTemplate.update(sqlQuery, userId, friendId);
+
+            jdbcTemplate.update(sqlQuery, friendId, userId);
+        }
+
         return getFriends(userId);
     }
 
@@ -138,8 +147,10 @@ public class UserDbStorage implements UserStorage {
             throw new UserNotFoundException("Пользователь с ID " + friendId + " не является другом для пользователя с ID " + userId);
         }
 
-        String sqlQuery = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlQuery, userId, friendId);
+        // Удаляем дружбу в обоих направлениях
+        String sqlQuery = "DELETE FROM friendship WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
+        jdbcTemplate.update(sqlQuery, userId, friendId, friendId, userId);
+
         return getFriends(userId);
     }
 

@@ -30,17 +30,8 @@ public class GenreService {
         return genre;
     }
 
-    public boolean existsById(Long id) {
-        try {
-            Genre genre = genreStorage.getGenreById(id);
-            return genre != null;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public void checkGenreExists(Long id) {
-        if (!existsById(id)) {
+        if (genreStorage.getGenreById(id) == null) {
             throw new GenreNotFoundException("Жанр с ID " + id + " не найден");
         }
     }

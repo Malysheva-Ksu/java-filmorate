@@ -28,7 +28,7 @@ public class Film {
     @Size(max = 200, message = "Максимальная длина описания — 200 символов.")
     private String description;
 
-    private MpaRating mpaRating;
+    private Mpa mpa;
 
     @NotNull(message = "Дата релиза не должна быть null.")
     @ReleaseDateConstraint

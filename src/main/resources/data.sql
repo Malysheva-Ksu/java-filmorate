@@ -1,3 +1,10 @@
+INSERT INTO mpa_ratings (mpa_id, name, description) VALUES
+    (1, 'G', 'No age restrictions'),
+    (2, 'PG', 'Parental guidance suggested'),
+    (3, 'PG_13', 'Parents strongly cautioned'),
+    (4, 'R', 'Restricted'),
+    (5, 'NC_17', 'Adults only');
+
 -- Данные для таблицы users
 INSERT INTO users (user_id, email, login, name, birthday) VALUES
 (1, 'john.doe@example.com', 'johndoe', 'John Doe', '1990-01-15'),

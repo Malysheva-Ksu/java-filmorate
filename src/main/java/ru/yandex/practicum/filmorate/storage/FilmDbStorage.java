@@ -47,7 +47,7 @@ public class FilmDbStorage implements FilmStorage {
             stmt.setString(2, film.getDescription());
             stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
             stmt.setLong(4, film.getDurationInSeconds());
-            stmt.setString(5, film.getMpaRating().getDescription());
+            stmt.setString(5, film.getMpa().getName());
             return stmt;
         }, keyHolder);
 
