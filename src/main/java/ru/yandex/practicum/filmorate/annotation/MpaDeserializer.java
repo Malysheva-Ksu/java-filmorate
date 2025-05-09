@@ -24,13 +24,11 @@ public class MpaDeserializer extends JsonDeserializer<Mpa> {
             } else {
                 setNameById(mpa);
             }
-        }
-        else if (node.isTextual()) {
+        } else if (node.isTextual()) {
             String mpaName = node.asText();
             mpa.setName(mpaName);
             setIdByName(mpa);
-        }
-        else if (node.isNumber()) {
+        } else if (node.isNumber()) {
             mpa.setId(node.asLong());
             setNameById(mpa);
         }
