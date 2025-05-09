@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.annotation.GenresDeserializer;
 import ru.yandex.practicum.filmorate.annotation.PositiveDuration;
 import ru.yandex.practicum.filmorate.annotation.ReleaseDateConstraint;
 
@@ -16,6 +18,8 @@ import java.util.Set;
 public class Film {
     private Long id;
     private Set<Long> likes = new HashSet<>();
+
+    @JsonDeserialize(using = GenresDeserializer.class)
     private Set<String> genres = new HashSet<>();
 
     @NotBlank(message = "Название не может быть пустым.")
@@ -24,7 +28,6 @@ public class Film {
     @Size(max = 200, message = "Максимальная длина описания — 200 символов.")
     private String description;
 
-    @NotNull(message = "Рейтинг МРА не может быть null.")
     private MpaRating mpaRating;
 
     @NotNull(message = "Дата релиза не должна быть null.")

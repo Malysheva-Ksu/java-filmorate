@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.ErrorResponseException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.UserStorage;
@@ -125,6 +126,19 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Set<Long> removeFriend(Long userId, Long friendId) {
         User user = getUserById(userId);
+
+        try {
+            getUserById(friendId);
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("Невозможно удалить из друзей: пользователь с ID " + friendId + " не найден");
+        }
+
+        String checkQuery = "SELECT COUNT(*) FROM friendship WHERE user_id = ? AND friend_id = ?";
+        Integer count = jdbcTemplate.queryForObject(checkQuery, Integer.class, userId, friendId);
+        if (count == null || count == 0) {
+            throw new UserNotFoundException("Пользователь с ID " + friendId + " не является другом для пользователя с ID " + userId);
+        }
+
         String sqlQuery = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
         return getFriends(userId);
@@ -150,6 +164,11 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Set<Long> getFriends(Long userId) {
+        try {
+            getUserById(userId);
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("Невозможно получить список друзей: пользователь с ID " + userId + " не найден");
+        }
         String sqlQuery = "SELECT friend_id FROM friendship WHERE user_id = ?";
         return jdbcTemplate.queryForList(sqlQuery, Long.class, userId).stream().collect(Collectors.toSet());
     }
