@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Таблица фильмов
 CREATE TABLE IF NOT EXISTS films (
-    film_id BIGINT PRIMARY KEY,
+    film_id BIGINT AUTO_INCREMENT PRIMARY KEY
     name VARCHAR(255) NOT NULL,
     description TEXT,
     release_date DATE NOT NULL,
