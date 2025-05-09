@@ -20,7 +20,7 @@ public class Film {
     private Set<Long> likes = new HashSet<>();
 
     @JsonDeserialize(using = GenresDeserializer.class)
-    private Set<String> genres = new HashSet<>();
+    private Set<Genre> genres = new HashSet<>();
 
     @NotBlank(message = "Название не может быть пустым.")
     private String name;

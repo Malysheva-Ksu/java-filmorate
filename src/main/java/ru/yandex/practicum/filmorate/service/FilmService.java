@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.FilmStorage;
 
 import java.util.List;
@@ -17,13 +18,26 @@ public class FilmService {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
 
     private final FilmStorage filmStorage;
+    private final GenreService genreService;
+    private final MpaService mpaService;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, GenreService genreService, MpaService mpaService) {
         this.filmStorage = filmStorage;
+        this.genreService = genreService;
+        this.mpaService = mpaService;
     }
 
     public Film addFilm(Film film) {
+        if (film.getMpaRating() != null) {
+            mpaService.checkMpaExists(film.getMpaRating().getId());
+        }
+
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+            for (Genre genre : film.getGenres()) {
+                genreService.checkGenreExists(genre.getId());
+            }
+        }
         Film addedFilm = filmStorage.addFilm(film);
         log.info("Добавлен новый фильм: {}", addedFilm);
         return addedFilm;

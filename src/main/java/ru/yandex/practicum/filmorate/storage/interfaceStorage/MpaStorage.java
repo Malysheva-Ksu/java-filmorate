@@ -9,4 +9,6 @@ public interface MpaStorage {
     List<MpaRating> getAllRatings();
 
     MpaRating getRatingById(Long id);
+
+    boolean existsById(Long id);
 }

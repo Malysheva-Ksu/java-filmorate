@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.MpaStorage;
 
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+@Repository("inMemoryMpaStorage")
 public class InMemoryMpaStorage implements MpaStorage {
 
     private final Map<Long, MpaRating> ratings = new HashMap<>();
@@ -17,7 +18,7 @@ public class InMemoryMpaStorage implements MpaStorage {
     public InMemoryMpaStorage() {
         ratings.put(1L, MpaRating.G);
         ratings.put(2L, MpaRating.PG);
-        ratings.put(3L, MpaRating.PG);
+        ratings.put(3L, MpaRating.PG_13);
         ratings.put(4L, MpaRating.R);
         ratings.put(5L, MpaRating.NC_17);
     }
@@ -31,8 +32,12 @@ public class InMemoryMpaStorage implements MpaStorage {
     public MpaRating getRatingById(Long id) {
         MpaRating rating = ratings.get(id);
         if (rating == null) {
-            throw new IllegalArgumentException("MPA-рейтинг с идентификатором " + id + " не найден");
+            throw new MpaNotFoundException("MPA-рейтинг с идентификатором " + id + " не найден");
         }
         return rating;
+    }
+
+    public boolean existsById(Long id) {
+        return ratings.containsKey(id);
     }
 }
