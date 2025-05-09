@@ -1,0 +1,43 @@
+-- Данные для таблицы users
+INSERT INTO users (user_id, email, login, name, birthday) VALUES
+(1, 'john.doe@example.com', 'johndoe', 'John Doe', '1990-01-15'),
+(2, 'jane.smith@example.com', 'janesmith', 'Jane Smith', '1985-05-25'),
+(3, 'alex.brown@example.com', 'alexbrown', 'Alex Brown', '1992-07-10');
+
+-- Данные для таблицы genres
+INSERT INTO genres (genre_id, name) VALUES
+(1, 'Action'),
+(2, 'Comedy'),
+(3, 'Drama'),
+(4, 'Science Fiction'),
+(5, 'Horror');
+
+-- Данные для таблицы films
+INSERT INTO films (film_id, name, description, release_date, durationInSeconds, mpa_rating) VALUES
+(1, 'Inception', 'A mind-bending thriller by Christopher Nolan', '2010-07-16', 8880, 'PG-13'),
+(2, 'The Matrix', 'A sci-fi classic', '1999-03-31', 8160, 'R'),
+(3, 'Interstellar', 'Journey beyond the stars', '2014-11-07', 10140, 'PG-13');
+
+-- Данные для таблицы friendship
+INSERT INTO friendship (user_id, friend_id, status) VALUES
+(1, 2, 'confirmed'),
+(2, 1, 'confirmed'),
+(1, 3, 'pending'),
+(3, 1, 'pending');
+
+-- Данные для таблицы likes
+INSERT INTO likes (user_id, film_id) VALUES
+(1, 1),
+(1, 2),
+(2, 2),
+(3, 3),
+(2, 1);
+
+-- Данные для таблицы film_genres
+INSERT INTO film_genres (film_id, genre_id) VALUES
+(1, 1), -- Inception - Action
+(1, 3), -- Inception - Drama
+(2, 1), -- The Matrix - Action
+(2, 4), -- The Matrix - Science Fiction
+(3, 4), -- Interstellar - Science Fiction
+(3, 3); -- Interstellar - Drama
