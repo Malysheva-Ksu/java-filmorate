@@ -5,6 +5,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.UserStorage;
 
@@ -122,10 +123,8 @@ public class UserDbStorage implements UserStorage {
         Integer count = jdbcTemplate.queryForObject(checkQuery, Integer.class, userId, friendId);
 
         if (count == null || count == 0) {
-            String sqlQuery = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, 'confirmed')";
+            String sqlQuery = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, 'pending')";
             jdbcTemplate.update(sqlQuery, userId, friendId);
-
-            jdbcTemplate.update(sqlQuery, friendId, userId);
         }
 
         return getFriends(userId);
@@ -143,12 +142,10 @@ public class UserDbStorage implements UserStorage {
 
         String checkQuery = "SELECT COUNT(*) FROM friendship WHERE user_id = ? AND friend_id = ?";
         Integer count = jdbcTemplate.queryForObject(checkQuery, Integer.class, userId, friendId);
-        if (count == null || count == 0) {
-            throw new UserNotFoundException("Пользователь с ID " + friendId + " не является другом для пользователя с ID " + userId);
-        }
 
-        String sqlQuery = "DELETE FROM friendship WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
-        jdbcTemplate.update(sqlQuery, userId, friendId, friendId, userId);
+        String sqlQuery = "DELETE FROM friendship WHERE (user_id = ? AND friend_id = ?)";
+
+        jdbcTemplate.update(sqlQuery, userId, friendId);
 
         return getFriends(userId);
     }

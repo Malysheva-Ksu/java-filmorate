@@ -82,10 +82,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (userFriends != null) {
             userFriends.remove(friendId);
         }
-        Map<Long, FriendshipStatus> friendFriends = friendships.get(friendId);
-        if (friendFriends != null) {
-            friendFriends.remove(userId);
-        }
+
         return getFriends(userId);
     }
 
