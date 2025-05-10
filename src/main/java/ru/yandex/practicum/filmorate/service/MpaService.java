@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.MpaRating;
-import ru.yandex.practicum.filmorate.storage.InMemoryMpaStorage;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.MpaStorage;
 
 import java.util.Arrays;
