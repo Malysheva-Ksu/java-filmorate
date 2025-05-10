@@ -1,29 +1,43 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
 
     private final FilmService filmService;
+    private final MpaService mpaService;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, MpaService mpaService) {
         this.filmService = filmService;
+        this.mpaService = mpaService;
     }
 
     @PostMapping
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
+        if (film.getMpa() != null && film.getMpa().getId() != null) {
+            try {
+                mpaService.checkMpaExists(film.getMpa().getId());
+            } catch (MpaNotFoundException e) {
+                log.error("Ошибка при создании фильма: {}", e.getMessage());
+                throw e;
+            }
+        }
         Film createdFilm = filmService.addFilm(film);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdFilm);
     }
