@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.GenreStorage;
 
@@ -20,6 +21,7 @@ public class InMemoryGenreStorage implements GenreStorage {
         genres.put(3L, new Genre(3L, "Мультфильм"));
         genres.put(4L, new Genre(4L, "Триллер"));
         genres.put(5L, new Genre(5L, "Документальный"));
+        genres.put(6L, new Genre(6L, "Боевик"));
     }
 
     @Override
@@ -31,7 +33,7 @@ public class InMemoryGenreStorage implements GenreStorage {
     public Genre getGenreById(Long id) {
         Genre genre = genres.get(id);
         if (genre == null) {
-            throw new IllegalArgumentException("Жанр с идентификатором " + id + " не найден");
+            throw new GenreNotFoundException("Жанр с идентификатором " + id + " не найден");
         }
         return genre;
     }

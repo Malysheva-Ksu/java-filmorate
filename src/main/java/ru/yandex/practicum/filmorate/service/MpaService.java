@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.storage.InMemoryMpaStorage;
+import ru.yandex.practicum.filmorate.storage.interfaceStorage.MpaStorage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +14,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class MpaService {
+    private final MpaStorage mpaStorage;
+
+    public MpaService(@Qualifier("inMemoryMpaStorage") MpaStorage mpaStorage) {
+        this.mpaStorage = mpaStorage;
+    }
 
     public List<Mpa> getAllRatings() {
-        return Arrays.stream(MpaRating.values())
-                .map(rating -> new Mpa(rating.getId(), rating.name()))
+        List<MpaRating> ratingEnums = mpaStorage.getAllRatings();
+        return ratingEnums.stream()
+                .map(ratingEnum -> new Mpa(ratingEnum.getId(), ratingEnum.getName()))
                 .collect(Collectors.toList());
     }
 

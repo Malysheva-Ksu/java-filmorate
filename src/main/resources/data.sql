@@ -1,9 +1,11 @@
+ALTER TABLE films ALTER COLUMN film_id RESTART WITH 4;
+
 INSERT INTO mpa_ratings (mpa_id, name, description) VALUES
     (1, 'G', 'No age restrictions'),
     (2, 'PG', 'Parental guidance suggested'),
-    (3, 'PG_13', 'Parents strongly cautioned'),
+    (3, 'PG-13', 'Parents strongly cautioned'),
     (4, 'R', 'Restricted'),
-    (5, 'NC_17', 'Adults only');
+    (5, 'NC-17', 'Adults only');
 
 -- Данные для таблицы users
 INSERT INTO users (user_id, email, login, name, birthday) VALUES
@@ -13,17 +15,19 @@ INSERT INTO users (user_id, email, login, name, birthday) VALUES
 
 -- Данные для таблицы genres
 INSERT INTO genres (genre_id, name) VALUES
-(1, 'Action'),
-(2, 'Comedy'),
-(3, 'Drama'),
-(4, 'Science Fiction'),
-(5, 'Horror');
+(1L, 'Комедия'),
+(2L, 'Драма'),
+(3L, 'Мультфильм'),
+(4L, 'Триллер'),
+(5L, 'Документальный'),
+(6L, 'Боевик);
+
 
 -- Данные для таблицы films
 INSERT INTO films (film_id, name, description, release_date, durationInSeconds, mpa_rating) VALUES
 (1, 'Inception', 'A mind-bending thriller by Christopher Nolan', '2010-07-16', 8880, 'PG-13'),
-(2, 'The Matrix', 'A sci-fi classic', '1999-03-31', 8160, 'R'),
-(3, 'Interstellar', 'Journey beyond the stars', '2014-11-07', 10140, 'PG-13');
+(2, 'The Matrix', 'A computer hacker learns about the true nature of reality', '1999-03-31', 7860, 'R'),
+(3, 'Interstellar', 'A team of explorers travel through a wormhole in space', '2014-11-07', 10140, 'PG-13');
 
 -- Данные для таблицы friendship
 INSERT INTO friendship (user_id, friend_id, status) VALUES
