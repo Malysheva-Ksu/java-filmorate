@@ -37,7 +37,7 @@ public class InMemoryMpaStorage implements MpaStorage {
     public MpaRating getRatingById(Long id) {
         List<Mpa> allMpa = ratings.values().stream().toList();
         Mpa mpa = allMpa.stream()
-                .filter(m-> m.getId() == id)
+                .filter(m -> m.getId() == id)
                 .findFirst()
                 .orElse(null);
 
