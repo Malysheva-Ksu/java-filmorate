@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.annotation.GenresDeserializer;
 import ru.yandex.practicum.filmorate.annotation.PositiveDuration;
 import ru.yandex.practicum.filmorate.annotation.ReleaseDateConstraint;
 
@@ -19,7 +18,6 @@ public class Film {
     private Long id;
     private Set<Long> likes = new HashSet<>();
 
-    @JsonDeserialize(using = GenresDeserializer.class)
     private Set<Genre> genres = new HashSet<>();
 
     @NotBlank(message = "Название не может быть пустым.")

@@ -36,25 +36,19 @@ public class FilmDbStorage implements FilmStorage {
         }
         film.setDurationInSeconds(rs.getLong("durationInSeconds"));
 
-        Mpa mpa = new Mpa();
         String mpaName = rs.getString("mpa_rating");
-        mpa.setName(mpaName);
+        Mpa mpa = new Mpa(0L, "null");
 
         if ("G".equals(mpaName)) {
-            mpa.setId(1L);
-            mpa.setName("G");
+            mpa = new Mpa(1L, "G");
         } else if ("PG".equals(mpaName)) {
-            mpa.setId(2L);
-            mpa.setName("PG");
+            mpa = new Mpa(2L, "PG");
         } else if ("PG_13".equals(mpaName) || "PG-13".equals(mpaName)) {
-            mpa.setId(3L);
-            mpa.setName("PG-13");
+            mpa = new Mpa(3L, "PG-13");
         } else if ("R".equals(mpaName)) {
-            mpa.setId(4L);
-            mpa.setName("R");
+            mpa = new Mpa(4L, "R");
         } else if ("NC_17".equals(mpaName) || "NC-17".equals(mpaName)) {
-            mpa.setId(5L);
-            mpa.setName("NC-17");
+            mpa = new Mpa(5L, "NC-17");
         }
 
         film.setMpa(mpa);
@@ -97,11 +91,11 @@ public class FilmDbStorage implements FilmStorage {
         getFilmById(film.getId());
         Long mpaId = film.getMpa().getId();
         Mpa mpa = film.getMpa();
-        MpaRating mpaRating = mpa.getMpaRatingById(mpaId);
+        String mpaRating = mpa.getName();
 
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, durationInSeconds = ?, mpa_rating = ? WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(),
-                Date.valueOf(film.getReleaseDate()), film.getDurationInSeconds(), mpaRating.getName(), film.getId());
+                Date.valueOf(film.getReleaseDate()), film.getDurationInSeconds(), mpa.getName(), film.getId());
         return film;
     }
 

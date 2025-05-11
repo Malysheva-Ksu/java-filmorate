@@ -86,9 +86,7 @@ public class FilmTests {
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDurationInSeconds(200L);
 
-        Mpa mpa = new Mpa();
-        mpa.setId(1L);
-        mpa.setName("G");
+        Mpa mpa = new Mpa(1L, "G");
         film.setMpa(mpa);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);

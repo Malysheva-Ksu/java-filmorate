@@ -2,42 +2,77 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.MpaStorage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository("inMemoryMpaStorage")
 public class InMemoryMpaStorage implements MpaStorage {
 
-    private final Map<Long, MpaRating> ratings = new HashMap<>();
+    private final Map<MpaRating, Mpa> ratings = new HashMap<>();
 
     public InMemoryMpaStorage() {
-        ratings.put(1L, MpaRating.G);
-        ratings.put(2L, MpaRating.PG);
-        ratings.put(3L, MpaRating.PG_13);
-        ratings.put(4L, MpaRating.R);
-        ratings.put(5L, MpaRating.NC_17);
+        ratings.put(MpaRating.G, new Mpa(1L, "G"));
+        ratings.put(MpaRating.PG, new Mpa(2L, "PG"));
+        ratings.put(MpaRating.PG_13, new Mpa(3L, "PG-13"));
+        ratings.put(MpaRating.R, new Mpa(4L, "R"));
+        ratings.put(MpaRating.NC_17, new Mpa(5L, "NC-17"));
     }
 
     @Override
     public List<MpaRating> getAllRatings() {
-        return new ArrayList<>(ratings.values());
+        List<MpaRating> allRatings = ratings.keySet().stream().toList();
+        return allRatings;
+    }
+
+    @Override
+    public List<Mpa> getAllMpa() {
+        List<Mpa> allMpa = ratings.values().stream().toList();
+        return allMpa;
     }
 
     @Override
     public MpaRating getRatingById(Long id) {
-        MpaRating rating = ratings.get(id);
-        if (rating == null) {
-            throw new MpaNotFoundException("MPA-рейтинг с идентификатором " + id + " не найден");
+        List<Mpa> allMpa = ratings.values().stream().toList();
+        Mpa mpa = allMpa.stream()
+                .filter(m-> m.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (mpa ==null) {
+            throw new MpaNotFoundException("рейтинг с id" + id + "не найден");
         }
-        return rating;
+
+        List<MpaRating> allRating = ratings.keySet().stream().toList();
+        MpaRating mpaRating = allRating.stream()
+                .filter(r -> ratings.values().equals(mpa))
+                .findFirst()
+                .orElse(null);
+        return mpaRating;
+    }
+
+    @Override
+    public Mpa getMpaById(Long id) {
+        List<Mpa> allMpa = ratings.values().stream().toList();
+        return allMpa.stream()
+                .filter(m -> m.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     public boolean existsById(Long id) {
-        return ratings.containsKey(id);
+        List<Mpa> allRatings = ratings.values().stream().toList();
+        Mpa mpa = allRatings.stream()
+                .filter(m -> m.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (mpa == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

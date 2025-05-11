@@ -33,7 +33,7 @@ public class FilmService {
     public Film addFilm(Film film) {
         if (film.getMpa() != null && film.getMpa().getId() != null) {
             try {
-                mpaService.getRatingById(film.getMpa().getId());
+                mpaService.getMpaById(film.getMpa().getId());
             } catch (IllegalArgumentException e) {
                 throw new MpaNotFoundException("MPA рейтинг с ID " + film.getMpa().getId() + " не найден");
             }

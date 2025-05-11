@@ -27,7 +27,7 @@ public class MpaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Mpa> getRatingById(@PathVariable("id") Long id) {
-        Mpa rating = mpaService.getRatingById(id);
+        Mpa rating = mpaService.getMpaById(id);
         return ResponseEntity.ok(rating);
     }
 }

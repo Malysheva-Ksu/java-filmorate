@@ -7,9 +7,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.MpaStorage;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MpaService {
@@ -20,18 +18,16 @@ public class MpaService {
     }
 
     public List<Mpa> getAllRatings() {
-        List<MpaRating> ratingEnums = mpaStorage.getAllRatings();
-        return ratingEnums.stream()
-                .map(ratingEnum -> new Mpa(ratingEnum.getId(), ratingEnum.getName()))
-                .collect(Collectors.toList());
+        List<Mpa> allMpa = mpaStorage.getAllMpa();
+        return allMpa;
     }
 
-    public Mpa getRatingById(Long id) {
-        MpaRating rating = findMpaRatingById(id);
-        if (rating == null) {
-            throw new MpaNotFoundException("MPA рейтинг с ID " + id + " не найден");
+    public Mpa getMpaById(Long id) {
+        Mpa mpa = mpaStorage.getMpaById(id);
+        if (mpa == null) {
+            throw new MpaNotFoundException("рейтинг с id" + id + "не найден.");
         }
-        return new Mpa(rating.getId(), rating.name());
+        return mpa;
     }
 
     public void checkMpaExists(Long id) {
@@ -41,9 +37,11 @@ public class MpaService {
     }
 
     private MpaRating findMpaRatingById(Long id) {
-        return Arrays.stream(MpaRating.values())
-                .filter(r -> r.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+    MpaRating rating = mpaStorage.getRatingById(id);
+    if (rating == null) {
+        throw new MpaNotFoundException("рейтинг с id" + id + "не найден");
+    } else {
+        return rating;
+    }
     }
 }
