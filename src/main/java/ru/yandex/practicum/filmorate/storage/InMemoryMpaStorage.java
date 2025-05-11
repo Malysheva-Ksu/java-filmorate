@@ -41,7 +41,7 @@ public class InMemoryMpaStorage implements MpaStorage {
                 .findFirst()
                 .orElse(null);
 
-        if (mpa ==null) {
+        if (mpa == null) {
             throw new MpaNotFoundException("рейтинг с id" + id + "не найден");
         }
 
