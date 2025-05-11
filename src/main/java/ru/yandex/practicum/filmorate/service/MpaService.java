@@ -32,7 +32,7 @@ public class MpaService {
 
     public void checkMpaExists(Long id) {
         if (findMpaRatingById(id) == null) {
-            throw new MpaNotFoundException("MPA рейтинг с ID " + id + " не найден");
+            throw new MpaNotFoundException("рейтинг с ID " + id + " не найден");
         }
     }
 

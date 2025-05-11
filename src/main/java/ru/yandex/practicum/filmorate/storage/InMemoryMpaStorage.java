@@ -36,20 +36,23 @@ public class InMemoryMpaStorage implements MpaStorage {
     @Override
     public MpaRating getRatingById(Long id) {
         List<Mpa> allMpa = ratings.values().stream().toList();
-        Mpa mpa = allMpa.stream()
+        Mpa mpaOfId = allMpa.stream()
                 .filter(m -> m.getId() == id)
                 .findFirst()
                 .orElse(null);
 
-        if (mpa == null) {
+        if (mpaOfId == null) {
             throw new MpaNotFoundException("рейтинг с id" + id + "не найден");
         }
 
         List<MpaRating> allRating = ratings.keySet().stream().toList();
-        MpaRating mpaRating = allRating.stream()
-                .filter(r -> ratings.values().equals(mpa))
-                .findFirst()
-                .orElse(null);
+        MpaRating mpaRating = null;
+
+        for (MpaRating rating: allRating) {
+            if (ratings.get(rating) == mpaOfId) {
+                mpaRating = rating;
+            }
+        }
         return mpaRating;
     }
 
