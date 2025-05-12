@@ -5,8 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.interfaceStorage.FilmStorage;
 
 import java.util.List;
 import java.util.Set;
@@ -17,13 +21,37 @@ public class FilmService {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
 
     private final FilmStorage filmStorage;
+    private final GenreService genreService;
+    private final MpaService mpaService;
 
     @Autowired
-    public FilmService(@Qualifier("inMemoryFilmStorage") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, GenreService genreService, MpaService mpaService) {
         this.filmStorage = filmStorage;
+        this.genreService = genreService;
+        this.mpaService = mpaService;
     }
 
     public Film addFilm(Film film) {
+        if (film.getMpa() != null && film.getMpa().getId() != null) {
+            try {
+                Mpa mpa = mpaService.getMpaById(film.getMpa().getId());
+            } catch (IllegalArgumentException e) {
+                throw new MpaNotFoundException("MPA рейтинг с ID " + film.getMpa().getId() + " не найден");
+            }
+        }
+
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+            for (Genre genre : film.getGenres()) {
+                if (genre.getId() != null) {
+                    try {
+                        genreService.getGenreById(genre.getId().longValue());
+                    } catch (Exception e) {
+                        throw new GenreNotFoundException("Жанр с ID " + genre.getId() + " не найден");
+                    }
+                }
+            }
+        }
+
         Film addedFilm = filmStorage.addFilm(film);
         log.info("Добавлен новый фильм: {}", addedFilm);
         return addedFilm;

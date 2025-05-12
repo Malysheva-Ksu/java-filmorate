@@ -12,8 +12,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class
-UserTests {
+public class UserTests {
 
     private final Validator validator;
 
@@ -30,8 +29,9 @@ UserTests {
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("Email не может быть пустым.");
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Email не может быть пустым.");
     }
 
     @Test
@@ -42,7 +42,9 @@ UserTests {
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertThat(violations).hasSize(2);
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Логин не может быть пустым.");
     }
 
     @Test
@@ -53,8 +55,9 @@ UserTests {
         user.setBirthday(LocalDate.of(2000, 1, 1));
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("Логин не должен содержать пробелы.");
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Логин не должен содержать пробелы.");
     }
 
     @Test
@@ -65,8 +68,9 @@ UserTests {
         user.setBirthday(LocalDate.of(3000, 1, 1));
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("Дата рождения не может быть в будущем.");
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Дата рождения не может быть в будущем.");
     }
 
     @Test

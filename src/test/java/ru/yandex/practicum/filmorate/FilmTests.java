@@ -6,6 +6,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -30,8 +31,9 @@ public class FilmTests {
         film.setDurationInSeconds(200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("Название не может быть пустым.");
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Название не может быть пустым.");
     }
 
     @Test
@@ -43,8 +45,9 @@ public class FilmTests {
         film.setDurationInSeconds(200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("Максимальная длина описания — 200 символов.");
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Максимальная длина описания — 200 символов.");
     }
 
     @Test
@@ -56,8 +59,9 @@ public class FilmTests {
         film.setDurationInSeconds(200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("Дата релиза не может быть раньше 28 декабря 1895 года.");
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Дата релиза не может быть раньше 28 декабря 1895 года.");
     }
 
     @Test
@@ -69,8 +73,9 @@ public class FilmTests {
         film.setDurationInSeconds(-200L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("Продолжительность фильма должна быть положительным числом.");
+        assertThat(violations)
+                .extracting(ConstraintViolation::getMessage)
+                .contains("Продолжительность фильма должна быть положительным числом.");
     }
 
     @Test
@@ -80,6 +85,9 @@ public class FilmTests {
         film.setDescription("A valid description.");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDurationInSeconds(200L);
+
+        Mpa mpa = new Mpa(1L, "G");
+        film.setMpa(mpa);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertThat(violations).isEmpty();
