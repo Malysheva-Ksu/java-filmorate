@@ -98,8 +98,13 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, durationInSeconds = ?, mpa_id = ? WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(),
                 Date.valueOf(film.getReleaseDate()), film.getDurationInSeconds(), mpa.getId(), film.getId());
-        return film;
+
+        String updateMpaSqlQuery = "UPDATE film_mpa_ratings SET mpa_id = ? WHERE film_id = ?";
+        jdbcTemplate.update(updateMpaSqlQuery, film.getMpa().getId(), film.getId());
+
+        return getFilmById(film.getId());
     }
+
 
     @Override
     public List<Film> getAllFilms() {
