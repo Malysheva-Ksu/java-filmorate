@@ -35,18 +35,18 @@ public class FilmDbStorage implements FilmStorage {
         }
         film.setDurationInSeconds(rs.getLong("durationInSeconds"));
 
-        String mpaName = rs.getString("mpa_rating");
-        Mpa mpa = new Mpa(0L, "null");
+        Long mpaId = rs.getLong("mpa_id");
+        Mpa mpa = new Mpa(0L, "unknown");
 
-        if ("G".equals(mpaName)) {
+        if (mpaId == 1) {
             mpa = new Mpa(1L, "G");
-        } else if ("PG".equals(mpaName)) {
+        } else if (mpaId ==2) {
             mpa = new Mpa(2L, "PG");
-        } else if ("PG_13".equals(mpaName) || "PG-13".equals(mpaName)) {
+        } else if (mpaId == 3) {
             mpa = new Mpa(3L, "PG-13");
-        } else if ("R".equals(mpaName)) {
+        } else if (mpaId == 4) {
             mpa = new Mpa(4L, "R");
-        } else if ("NC_17".equals(mpaName) || "NC-17".equals(mpaName)) {
+        } else if (mpaId ==5) {
             mpa = new Mpa(5L, "NC-17");
         }
 
@@ -57,7 +57,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Film addFilm(Film film) {
-        String sqlQuery = "INSERT INTO films (name, description, release_date, durationInSeconds, mpa_rating) " +
+        String sqlQuery = "INSERT INTO films (name, description, release_date, durationInSeconds, mpa_id) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -68,12 +68,15 @@ public class FilmDbStorage implements FilmStorage {
             stmt.setString(2, film.getDescription());
             stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
             stmt.setLong(4, film.getDurationInSeconds());
-            stmt.setString(5, film.getMpa() != null ? film.getMpa().getName() : null);
+            stmt.setLong(5, film.getMpa().getId());
             return stmt;
         }, keyHolder);
 
         long filmId = keyHolder.getKey().longValue();
         film.setId(filmId);
+
+        String mpaSql = "INSERT INTO film_mpa_ratings (film_id, mpa_id) VALUES (?, ?)";
+        jdbcTemplate.update(mpaSql, filmId, film.getMpa().getId());
 
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {
@@ -92,9 +95,9 @@ public class FilmDbStorage implements FilmStorage {
         Mpa mpa = film.getMpa();
         String mpaRating = mpa.getName();
 
-        String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, durationInSeconds = ?, mpa_rating = ? WHERE film_id = ?";
+        String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, durationInSeconds = ?, mpa_id = ? WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(),
-                Date.valueOf(film.getReleaseDate()), film.getDurationInSeconds(), mpa.getName(), film.getId());
+                Date.valueOf(film.getReleaseDate()), film.getDurationInSeconds(), mpa.getId(), film.getId());
         return film;
     }
 
@@ -115,9 +118,33 @@ public class FilmDbStorage implements FilmStorage {
         } catch (Exception e) {
             throw new FilmNotFoundException("Фильм с ID " + filmId + " не найден");
         }
+        loadMpaForFilm(film);
         loadGenresForFilm(film);
         loadLikesForFilm(film);
         return film;
+    }
+
+    private void loadMpaForFilm(Film film) {
+        String sqlQuery = "SELECT mpa_id FROM film_mpa_ratings WHERE film_id = ?";
+        Long mpaId = jdbcTemplate.queryForObject(sqlQuery, Long.class, film.getId());
+
+        if (mpaId != null) {
+            Mpa mpa = new Mpa(mpaId, "unknown");
+
+            if (mpaId == 1) {
+                mpa = new Mpa(1L, "G");
+            } else if (mpaId == 2) {
+                mpa = new Mpa(2L, "PG");
+            } else if (mpaId == 3) {
+                mpa = new Mpa(3L, "PG-13");
+            } else if (mpaId == 4) {
+                mpa = new Mpa(4L, "R");
+            } else if (mpaId == 5) {
+                mpa = new Mpa(5L, "NC-17");
+            }
+
+            film.setMpa(mpa);
+        }
     }
 
     private void loadGenresForFilm(Film film) {

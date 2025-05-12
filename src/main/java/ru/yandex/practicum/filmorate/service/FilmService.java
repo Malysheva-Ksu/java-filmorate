@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.interfaceStorage.FilmStorage;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public class FilmService {
     public Film addFilm(Film film) {
         if (film.getMpa() != null && film.getMpa().getId() != null) {
             try {
-                mpaService.getMpaById(film.getMpa().getId());
+                Mpa mpa = mpaService.getMpaById(film.getMpa().getId());
             } catch (IllegalArgumentException e) {
                 throw new MpaNotFoundException("MPA рейтинг с ID " + film.getMpa().getId() + " не найден");
             }

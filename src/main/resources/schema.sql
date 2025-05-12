@@ -1,9 +1,3 @@
-CREATE TABLE IF NOT EXISTS mpa_ratings (
-    mpa_id BIGINT PRIMARY KEY,
-    name VARCHAR(10) NOT NULL,
-    description VARCHAR(100)
-);
-
 -- Таблица пользователей
 CREATE TABLE IF NOT EXISTS users (
     user_id BIGINT PRIMARY KEY,
@@ -13,6 +7,18 @@ CREATE TABLE IF NOT EXISTS users (
     birthday DATE NOT NULL
 );
 
+-- Таблица жанров
+CREATE TABLE IF NOT EXISTS genres (
+    genre_id BIGINT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS mpa_ratings (
+    mpa_id BIGINT PRIMARY KEY,
+    name VARCHAR(10) NOT NULL,
+    description VARCHAR(100)
+);
+
 -- Таблица фильмов
 CREATE TABLE IF NOT EXISTS films (
     film_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -20,13 +26,7 @@ CREATE TABLE IF NOT EXISTS films (
     description TEXT,
     release_date DATE NOT NULL,
     durationInSeconds INTEGER NOT NULL,
-    mpa_rating VARCHAR(30) NOT NULL
-);
-
--- Таблица жанров
-CREATE TABLE IF NOT EXISTS genres (
-    genre_id BIGINT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE
+    mpa_id BIGINT
 );
 
 -- Таблица дружбы
@@ -55,4 +55,13 @@ CREATE TABLE IF NOT EXISTS film_genres (
     PRIMARY KEY (film_id, genre_id),
     FOREIGN KEY (film_id) REFERENCES films(film_id),
     FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
+);
+
+-- Таблица рейтингов фильмов
+CREATE TABLE IF NOT EXISTS film_mpa_ratings (
+    film_id BIGINT NOT NULL,
+    mpa_id BIGINT NOT NULL,
+    PRIMARY KEY (film_id, mpa_id),
+    FOREIGN KEY (film_id) REFERENCES films(film_id),
+    FOREIGN KEY (mpa_id) REFERENCES mpa_ratings(mpa_id)
 );

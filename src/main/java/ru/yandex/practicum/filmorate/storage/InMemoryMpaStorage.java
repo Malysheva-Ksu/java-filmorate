@@ -11,7 +11,7 @@ import java.util.*;
 @Repository("inMemoryMpaStorage")
 public class InMemoryMpaStorage implements MpaStorage {
 
-    private final Map<MpaRating, Mpa> ratings = new HashMap<>();
+    private final Map<MpaRating, Mpa> ratings = new LinkedHashMap<>();
 
     public InMemoryMpaStorage() {
         ratings.put(MpaRating.G, new Mpa(1L, "G"));
@@ -23,46 +23,36 @@ public class InMemoryMpaStorage implements MpaStorage {
 
     @Override
     public List<MpaRating> getAllRatings() {
-        List<MpaRating> allRatings = ratings.keySet().stream().toList();
+        List<MpaRating> allRatings = new ArrayList<>(ratings.keySet());
         return allRatings;
     }
 
     @Override
     public List<Mpa> getAllMpa() {
-        List<Mpa> allMpa = ratings.values().stream().toList();
+        List<Mpa> allMpa = new ArrayList<>(ratings.values());
         return allMpa;
     }
 
     @Override
     public MpaRating getRatingById(Long id) {
-        List<Mpa> allMpa = ratings.values().stream().toList();
-        Mpa mpaOfId = allMpa.stream()
-                .filter(m -> m.getId() == id)
-                .findFirst()
-                .orElse(null);
-
-        if (mpaOfId == null) {
-            throw new MpaNotFoundException("рейтинг с id" + id + "не найден");
-        }
-
-        List<MpaRating> allRating = ratings.keySet().stream().toList();
-        MpaRating mpaRating = null;
-
-        for (MpaRating rating: allRating) {
-            if (ratings.get(rating) == mpaOfId) {
-                mpaRating = rating;
+            for (Map.Entry<MpaRating, Mpa> entry : ratings.entrySet()) {
+                if (entry.getValue().getId().equals(id)) {
+                    return entry.getKey();
+                }
             }
+            throw new MpaNotFoundException("рейтинг с id " + id + " не найден");
         }
-        return mpaRating;
-    }
+
+
 
     @Override
     public Mpa getMpaById(Long id) {
-        List<Mpa> allMpa = ratings.values().stream().toList();
-        return allMpa.stream()
-                .filter(m -> m.getId() == id)
-                .findFirst()
-                .orElse(null);
+        for (Map.Entry<MpaRating, Mpa> entry : ratings.entrySet()) {
+            if (entry.getValue().getId().equals(id)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     public boolean existsById(Long id) {
