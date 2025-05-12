@@ -40,13 +40,13 @@ public class FilmDbStorage implements FilmStorage {
 
         if (mpaId == 1) {
             mpa = new Mpa(1L, "G");
-        } else if (mpaId ==2) {
+        } else if (mpaId == 2) {
             mpa = new Mpa(2L, "PG");
         } else if (mpaId == 3) {
             mpa = new Mpa(3L, "PG-13");
         } else if (mpaId == 4) {
             mpa = new Mpa(4L, "R");
-        } else if (mpaId ==5) {
+        } else if (mpaId == 5) {
             mpa = new Mpa(5L, "NC-17");
         }
 
